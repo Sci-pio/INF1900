@@ -15,11 +15,58 @@ bool debounce()
     }
     return false;
 }
+  /*enum class Color = {
+        ambre,
+        vert = 0x02,
+        rouge = 0x01,
+        aucune = 0x00
+        };*/
 
 int main()
 {
     DDRA = 0xff;
     DDRD = 0x00;
+
+    /* Color oldColor = ambre;
+    while(true)
+    {
+        if (debounce())
+        {
+            switch(oldColor)
+            {
+                case Color::ambre: 
+                while(debounce())
+                {
+                    PORTA = rouge;
+                }
+                oldColor = rouge;
+                break;
+
+                case Color::rouge:
+                while(debounce())
+                {
+                    PORTA = vert;
+                }
+                oldColor = vert;
+                break;
+
+                case Color::vert:
+                while(debounce())
+                {
+                    PORTA = 0x01;
+                    _delay_ms(5);
+                    PORTA = 0x02;
+                    _delay_ms(5);
+                }
+                oldColor = ambre;
+                break;
+            }
+        }
+        else
+        {
+            PORTA = Color::aucune;
+        }
+    }*/
 
     unsigned old_color = 0x02; // old_color: 2 = ambre, 1 = vert, 0 = rouge
     while (true)
