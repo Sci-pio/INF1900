@@ -1,0 +1,139 @@
+/**
+ * Programme qui allume une DEl en vert pendant 2 secondes apres avoir appuye et relache un bouton-poussoir 3 fois
+ * Entree: D2 pour le controle du bouton poussoir
+ * Sortie: A0, A1 pour le controle de la DEL
+ * \file probleme02.cpp
+ * \authors Kamil Maarite et Mathieu Lavoie
+ * \date 27 Janvier 2023
+ * cree le 18 janvier 2023
+ */
+
+#define F_CPU 8000000UL
+#include <avr/io.h>
+#include <util/delay.h>
+#define DDR_OUT 0xFF
+#define DDR_IN 0x00
+#define DEBOUNCE_TIME 10
+
+enum class Etat
+{
+    init,
+    appuye,
+    relache
+};
+
+bool estAppuye()
+{
+    if (PIND & 0x04)
+    {
+        _delay_ms(DEBOUNCE_TIME);
+        if (PIND & 0x04)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool estRelache()
+{
+    if (estAppuye())
+    {
+        while (estAppuye())
+        {
+        }
+        return true;
+    }
+    return false;
+}
+
+void initialiser()
+{
+    DDRA = DDR_OUT;
+    DDRD = DDR_IN;
+}
+
+int main()
+{
+    initialiser();
+    uint8_t rouge = 0x01;
+    uint8_t vert = 0x02;
+    uint8_t eteint = 0x00;
+    Etat etatPresent = Etat::init;
+    int nbAppuis = 0;
+    int nbRelachements = 0;
+    while (true)
+    {
+        // switch/case pour changements d'etat
+        switch (etatPresent)
+        {
+        case Etat::init:
+            nbAppuis = 0;
+            nbRelachements = 0;
+            if (estAppuye())
+            {
+                nbAppuis++;
+                etatPresent = Etat::appuye;
+            }
+            break;
+        case Etat::appuye:
+            if (estRelache())
+            {
+                nbRelachements++;
+                if (nbRelachements == 1 || nbRelachements == 2)
+                {
+                    etatPresent = Etat::relache;
+                }
+                if (nbRelachements == 3)
+                {
+                    etatPresent = Etat::init;
+                }
+            }
+            break;
+        case Etat::relache:
+            if (estAppuye())
+            {
+                nbAppuis++;
+                etatPresent = Etat::appuye;
+            }
+            break;
+        }
+        
+
+        // switch/case pour les sorties
+        switch (etatPresent)
+        {
+        case Etat::init:
+            PORTA = rouge;
+            break;
+        case Etat::appuye:
+            if (nbAppuis == 1)
+            {
+                PORTA = rouge;
+                _delay_ms(5);
+                PORTA = vert;
+                _delay_ms(5);
+                
+            }
+            else if (nbAppuis == 2)
+            {
+                PORTA = rouge;
+            }
+            else if (nbAppuis == 3)
+            {
+                PORTA = vert;
+            }
+            break;
+        case Etat::relache:
+            if (nbRelachements == 1)
+            {
+                PORTA = vert;
+            }
+            else if (nbRelachements == 2)
+            {
+                PORTA = eteint;
+            }
+            break;
+        }
+    }
+}

@@ -6,8 +6,19 @@
 * \authors Kamil Maarite et Mathieu Lavoie
 * \date 27 Janvier 2023
 * cree le 16 janvier 2023
-*/
 
+
++--------------+--------+---------------+--------+------------------------------------------------+
+| Etat Present | Entree | Prochain Etat | Sortie | Commentaire                                    |
++--------------+--------+---------------+--------+------------------------------------------------+
+| etatInitial  | 0      | etatInitial   | eteint | Entree vaut 1 SSI on a appuye-relache 3 fois   |
+|              |        |               |        | le bouton-poussoir                             |
++--------------+--------+---------------+--------+------------------------------------------------+
+| etatInitial  | 1      | etatAllume    | vert   |                                                |
++--------------+--------+---------------+--------+------------------------------------------------+
+| etatAllume   | x      | etatInitial   | vert   | S'effectue automatiquement apres deux secondes |
++--------------+--------+---------------+--------+------------------------------------------------+
+*/
 
 #define F_CPU 8000000UL
 #include <avr/io.h>
@@ -48,12 +59,6 @@ enum class Etat
     etatAllume
 };
 
-enum class Couleur
-{
-    vert = 0x02,
-    eteint = 0x00
-};
-
 void initialiser()
 {
     DDRA = DDR_OUT;
@@ -65,6 +70,8 @@ int main()
     initialiser();
     Etat etatPresent = Etat::etatInitial;
     int nbreFoisAppuye = 0;
+    uint8_t vert = 0x02;
+    uint8_t eteint = 0x00;
 
     while (true)
     {
@@ -82,9 +89,9 @@ int main()
         break;
         case Etat::etatAllume:
         {
-            PORTA = Couleur::vert;
-            _delay_ms(2000);
-            PORTA = Couleur::eteint;
+            PORTA = vert;
+            _delay_ms(1800); // correspond a environ 2s avec le temps d'execution
+            PORTA = eteint;
             nbreFoisAppuye = 0;
             etatPresent = Etat::etatInitial;
         }
