@@ -60,7 +60,7 @@ bool estAppuye()
 			return true;
 		}
 	}
-	return true;
+	return false;
 }
 
 void initialiser()
