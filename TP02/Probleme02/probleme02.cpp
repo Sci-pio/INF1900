@@ -25,7 +25,8 @@
 
  */
 
-#define F_CPU 8000000UL
+#define F_CPU 8000000UL 
+
 #include <avr/io.h>
 #include <util/delay.h>
 #define DDR_OUT 0xFF
@@ -59,7 +60,7 @@ bool estAppuye()
 			return true;
 		}
 	}
-	return false;
+	return true;
 }
 
 void initialiser()
